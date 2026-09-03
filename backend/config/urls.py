@@ -9,6 +9,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/health/', health_check, name='health-check'),
     path('api/auth/', include('users.urls')),
+    path('api/products/', include('products.urls')),
+    path('api/cart/', include('orders.cart_urls')),
+    path('api/orders/', include('orders.urls')),
 ]
 
 if settings.DEBUG:
