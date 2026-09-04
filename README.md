@@ -113,13 +113,13 @@ blinkit-clone/
 
 ## Deploy (free tier)
 
-| Service | Purpose | Notes |
-|---------|---------|-------|
-| [Neon](https://neon.tech) | PostgreSQL database | Copy `DATABASE_URL` connection string |
-| [Render](https://render.com) | Django backend | Root: `backend`, Build: `./build.sh`, Start: `gunicorn config.wsgi:application` |
-| [Vercel](https://vercel.com) | React frontend | Root: `frontend`, set `VITE_API_URL=https://<render-url>/api` |
+Full guide: **[DEPLOYMENT.md](DEPLOYMENT.md)** — Neon + Render + Vercel step-by-step.
 
-**Render env vars:** `DATABASE_URL`, `DATABASE_SSL=true`, `DEBUG=False`, `SECRET_KEY`, `ALLOWED_HOSTS=.onrender.com`, `CORS_ALLOWED_ORIGINS=https://your-frontend.vercel.app` (or rely on default Vercel regex — see [DEPLOY.md](DEPLOY.md))
+| Service | Purpose |
+|---------|---------|
+| [Neon](https://neon.tech) | PostgreSQL database |
+| [Render](https://render.com) | Django backend |
+| [Vercel](https://vercel.com) | React frontend |
 
 **Notes:**
 - Render free tier sleeps after 15 min idle (~30s cold start on first request).
