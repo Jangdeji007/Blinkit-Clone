@@ -54,6 +54,38 @@ class ProductAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
+    def test_admin_can_patch_product_via_multipart(self):
+        response = self.client.patch(
+            reverse('product-detail', args=[self.product.id]),
+            {
+                'name': 'Milk Updated',
+                'description': 'Fresh milk',
+                'price': '50.00',
+                'stock': 10,
+                'category': self.category.id,
+            },
+            format='multipart',
+            **self._auth_header(self.admin),
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], 'Milk Updated')
+
+    def test_admin_can_clear_category_on_multipart_patch(self):
+        response = self.client.patch(
+            reverse('product-detail', args=[self.product.id]),
+            {
+                'name': 'Milk',
+                'description': 'Fresh milk',
+                'price': '50.00',
+                'stock': 10,
+                'category': '',
+            },
+            format='multipart',
+            **self._auth_header(self.admin),
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response.data['category'])
+
 
 class OrderFlowTestCase(APITestCase):
     def setUp(self):

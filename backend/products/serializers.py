@@ -1,3 +1,4 @@
+from django.http import QueryDict
 from rest_framework import serializers
 
 from .models import Category, Product
@@ -47,10 +48,8 @@ class ProductSerializer(serializers.ModelSerializer):
         return value
 
     def to_internal_value(self, data):
-        if isinstance(data, dict):
-            mutable = data.copy()
-            category = mutable.get('category')
-            if category in ('', None):
-                mutable['category'] = None
-            data = mutable
+        if isinstance(data, QueryDict):
+            data = data.copy()
+        if isinstance(data, dict) and data.get('category') in ('', None):
+            data['category'] = None
         return super().to_internal_value(data)

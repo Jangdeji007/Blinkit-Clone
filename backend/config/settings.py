@@ -6,6 +6,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,30 +81,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database — Microsoft SQL Server via mssql-django
-_db_driver = os.environ.get('DB_DRIVER', 'ODBC Driver 18 for SQL Server')
-_db_extra_params = os.environ.get('DB_EXTRA_PARAMS', 'TrustServerCertificate=yes')
-_db_trusted = os.environ.get('DB_TRUSTED_CONNECTION', 'yes').lower() in ('1', 'true', 'yes')
-_db_port = os.environ.get('DB_PORT', '').strip()
+# Database — PostgreSQL (local dev or DATABASE_URL on Render/Neon)
+_db_port = os.environ.get('DB_PORT', '5432').strip() or '5432'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': os.environ.get('DB_NAME', 'blinkit_db'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'OPTIONS': {
-            'driver': _db_driver,
-            'extra_params': _db_extra_params if not _db_trusted else f'Trusted_Connection=yes;{_db_extra_params}',
-        },
-    }
+    'default': dj_database_url.config(
+        default=(
+            f"postgres://{os.environ.get('DB_USER', 'postgres')}:"
+            f"{os.environ.get('DB_PASSWORD', 'postgres')}@"
+            f"{os.environ.get('DB_HOST', 'localhost')}:"
+            f"{_db_port}/"
+            f"{os.environ.get('DB_NAME', 'blinkit_db')}"
+        ),
+        conn_max_age=600,
+        ssl_require=os.environ.get('DATABASE_SSL', 'false').lower() in ('1', 'true', 'yes'),
+    )
 }
-
-if _db_port:
-    DATABASES['default']['PORT'] = _db_port
-
-if not _db_trusted:
-    DATABASES['default']['USER'] = os.environ.get('DB_USER', 'sa')
-    DATABASES['default']['PASSWORD'] = os.environ.get('DB_PASSWORD', '')
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -120,6 +114,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

@@ -2,18 +2,25 @@
 
 A quick-commerce grocery delivery clone built as a full-stack assignment project. It includes an **Admin Panel** for product management and a **Customer Panel** for browsing, cart, checkout, and orders.
 
-**Stack:** Django REST Framework + React (Vite) + Microsoft SQL Server + JWT auth
+**Stack:** Django REST Framework + React (Vite) + PostgreSQL + JWT auth
 
 ## Prerequisites
 
 - Python 3.12+
 - Node.js 20+ (22.12+ recommended for Vite 7)
-- Microsoft SQL Server (local or remote)
-- [ODBC Driver 17 or 18 for SQL Server](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server)
+- Docker (for local PostgreSQL) or a PostgreSQL 16+ instance
 
 ## Quick start
 
-### 1. Backend
+### 1. PostgreSQL (Docker)
+
+```powershell
+docker run --name blinkit-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=blinkit_db -p 5432:5432 -d postgres:16
+```
+
+If the container already exists: `docker start blinkit-postgres`
+
+### 2. Backend
 
 From the project root:
 
@@ -21,12 +28,6 @@ From the project root:
 python -m venv venv
 .\venv\Scripts\pip install -r backend\requirements.txt
 copy backend\.env.example backend\.env
-```
-
-Create the database, run migrations, and seed demo data (includes demo login accounts):
-
-```powershell
-sqlcmd -S localhost -E -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'blinkit_db') CREATE DATABASE blinkit_db;"
 cd backend
 ..\venv\Scripts\python manage.py migrate
 ..\venv\Scripts\python manage.py seed_demo
@@ -49,7 +50,7 @@ Use these accounts at http://localhost:5173/login after running `seed_demo`:
 
 To reset passwords to the values above, run `python manage.py seed_demo` again.
 
-### 2. Frontend
+### 3. Frontend
 
 In a separate terminal:
 
@@ -107,8 +108,22 @@ blinkit-clone/
 
 | Location | Variable | Default |
 |----------|----------|---------|
-| `backend/.env` | SQL Server connection, `SECRET_KEY`, `CORS_ALLOWED_ORIGINS` | See [backend/.env.example](backend/.env.example) |
+| `backend/.env` | PostgreSQL connection, `SECRET_KEY`, `CORS_ALLOWED_ORIGINS` | See [backend/.env.example](backend/.env.example) |
 | `frontend/.env` | `VITE_API_URL` | `/api` (proxied to Django in dev) |
+
+## Deploy (free tier)
+
+| Service | Purpose | Notes |
+|---------|---------|-------|
+| [Neon](https://neon.tech) | PostgreSQL database | Copy `DATABASE_URL` connection string |
+| [Render](https://render.com) | Django backend | Root: `backend`, Build: `./build.sh`, Start: `gunicorn config.wsgi:application` |
+| [Vercel](https://vercel.com) | React frontend | Root: `frontend`, set `VITE_API_URL=https://<render-url>/api` |
+
+**Render env vars:** `DATABASE_URL`, `DATABASE_SSL=true`, `DEBUG=False`, `SECRET_KEY`, `ALLOWED_HOSTS=.onrender.com`, `CORS_ALLOWED_ORIGINS=https://<vercel-url>`
+
+**Notes:**
+- Render free tier sleeps after 15 min idle (~30s cold start on first request).
+- Product images uploaded in admin do not persist on Render free tier (demo seed data works without images).
 
 ## Requirements reference
 
