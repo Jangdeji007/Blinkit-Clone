@@ -2,8 +2,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import Navbar from './components/Navbar'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import CartPage from './pages/CartPage'
+import CheckoutPage from './pages/CheckoutPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import OrdersPage from './pages/OrdersPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import SignupPage from './pages/SignupPage'
 import GuestRoute from './routes/GuestRoute'
@@ -52,6 +55,36 @@ export default function App() {
             <GuestRoute>
               <SignupPage />
             </GuestRoute>
+          )}
+        />
+        <Route
+          path="/cart"
+          element={(
+            <ProtectedRoute requiredRole="customer">
+              <Layout>
+                <CartPage />
+              </Layout>
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/checkout"
+          element={(
+            <ProtectedRoute requiredRole="customer">
+              <Layout>
+                <CheckoutPage />
+              </Layout>
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/orders"
+          element={(
+            <ProtectedRoute requiredRole="customer">
+              <Layout>
+                <OrdersPage />
+              </Layout>
+            </ProtectedRoute>
           )}
         />
         <Route

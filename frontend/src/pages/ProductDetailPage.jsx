@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import { addToCart } from '../api/cart'
 import { getProduct } from '../api/products'
 import { useAuth } from '../context/AuthContext'
 import { getApiErrorMessage } from '../utils/errors'
@@ -12,6 +13,10 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [quantity, setQuantity] = useState(1)
+  const [cartMessage, setCartMessage] = useState('')
+  const [cartError, setCartError] = useState('')
+  const [addingToCart, setAddingToCart] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -63,7 +68,26 @@ export default function ProductDetailPage() {
 
   const imageUrl = getMediaUrl(product.image)
   const outOfStock = product.stock === 0
-  const showCartPlaceholder = isAuthenticated && user.role === 'customer'
+  const isCustomer = isAuthenticated && user.role === 'customer'
+
+  const handleAddToCart = async () => {
+    setCartMessage('')
+    setCartError('')
+    setAddingToCart(true)
+    try {
+      await addToCart({ product_id: product.id, quantity })
+      setCartMessage('Added to cart!')
+    } catch (err) {
+      setCartError(getApiErrorMessage(err))
+    } finally {
+      setAddingToCart(false)
+    }
+  }
+
+  const handleQuantityChange = (event) => {
+    const value = Math.max(1, Math.min(product.stock, Number(event.target.value) || 1))
+    setQuantity(value)
+  }
 
   return (
     <main className="page-content product-detail-page">
@@ -92,10 +116,36 @@ export default function ProductDetailPage() {
             <p className="product-description">{product.description}</p>
           )}
 
-          {showCartPlaceholder && (
-            <button type="button" className="auth-btn product-detail-btn" disabled>
-              Add to Cart (Phase 3)
-            </button>
+          {!isAuthenticated && !outOfStock && (
+            <p className="product-cart-hint">
+              <Link to="/login">Login</Link> to add to cart
+            </p>
+          )}
+
+          {isCustomer && !outOfStock && (
+            <div className="product-cart-actions">
+              <label htmlFor="quantity" className="qty-label">Quantity</label>
+              <input
+                id="quantity"
+                type="number"
+                className="qty-input"
+                min={1}
+                max={product.stock}
+                value={quantity}
+                onChange={handleQuantityChange}
+              />
+              <button
+                type="button"
+                className="auth-btn product-detail-btn"
+                onClick={handleAddToCart}
+                disabled={addingToCart}
+              >
+                {addingToCart ? 'Adding...' : 'Add to Cart'}
+              </button>
+              {cartMessage && <p className="success-message">{cartMessage}</p>}
+              {cartError && <p className="error-message">{cartError}</p>}
+              <Link to="/cart" className="back-link">View cart</Link>
+            </div>
           )}
         </div>
       </article>

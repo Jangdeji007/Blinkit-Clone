@@ -28,8 +28,8 @@ export default function Navbar() {
         {isAuthenticated && user.role === 'customer' && (
           <>
             <Link to="/">Home</Link>
-            <span className="nav-placeholder">Cart (Phase 3)</span>
-            <span className="nav-placeholder">Orders (Phase 3)</span>
+            <Link to="/cart">Cart</Link>
+            <Link to="/orders">Orders</Link>
           </>
         )}
 
