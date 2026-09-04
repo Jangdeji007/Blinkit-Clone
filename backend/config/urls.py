@@ -4,11 +4,13 @@ from django.contrib import admin
 from django.urls import include, path
 
 from config.views import health_check
+from products.views import CategoryListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/health/', health_check, name='health-check'),
     path('api/auth/', include('users.urls')),
+    path('api/categories/', CategoryListView.as_view(), name='category-list'),
     path('api/products/', include('products.urls')),
     path('api/cart/', include('orders.cart_urls')),
     path('api/orders/', include('orders.urls')),

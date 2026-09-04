@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import Navbar from './components/Navbar'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminProductFormPage from './pages/AdminProductFormPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import HomePage from './pages/HomePage'
@@ -83,6 +84,26 @@ export default function App() {
             <ProtectedRoute requiredRole="customer">
               <Layout>
                 <OrdersPage />
+              </Layout>
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/admin/products/add"
+          element={(
+            <ProtectedRoute requiredRole="admin">
+              <Layout>
+                <AdminProductFormPage />
+              </Layout>
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/admin/products/edit/:id"
+          element={(
+            <ProtectedRoute requiredRole="admin">
+              <Layout>
+                <AdminProductFormPage />
               </Layout>
             </ProtectedRoute>
           )}

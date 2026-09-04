@@ -3,11 +3,18 @@ from decimal import Decimal, InvalidOperation
 from django.db.models import Q
 from rest_framework import generics
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.permissions import AllowAny
 
 from users.permissions import IsAdminOrReadOnly
 
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Category, Product
+from .serializers import CategorySerializer, ProductSerializer
+
+
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.all().order_by('name')
+    serializer_class = CategorySerializer
+    permission_classes = [AllowAny]
 
 
 class ProductListCreateView(generics.ListCreateAPIView):
