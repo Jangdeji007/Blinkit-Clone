@@ -160,14 +160,26 @@ _cors_origins = [
     if origin.strip()
 ]
 
+_cors_origin_regexes = [
+    pattern.strip()
+    for pattern in os.environ.get(
+        'CORS_ALLOWED_ORIGIN_REGEXES',
+        '',
+    ).split(',')
+    if pattern.strip()
+]
+
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOWED_ORIGINS = _cors_origins
-    if not CORS_ALLOWED_ORIGINS:
+    if not _cors_origin_regexes:
+        _cors_origin_regexes = [r'^https://[\w.-]+\.vercel\.app$']
+    CORS_ALLOWED_ORIGIN_REGEXES = _cors_origin_regexes
+    if not CORS_ALLOWED_ORIGINS and not CORS_ALLOWED_ORIGIN_REGEXES:
         raise ImproperlyConfigured(
-            'Set CORS_ALLOWED_ORIGINS when DEBUG=False.'
+            'Set CORS_ALLOWED_ORIGINS or CORS_ALLOWED_ORIGIN_REGEXES when DEBUG=False.'
         )
 
 LOGGING = {

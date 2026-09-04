@@ -119,7 +119,7 @@ blinkit-clone/
 | [Render](https://render.com) | Django backend | Root: `backend`, Build: `./build.sh`, Start: `gunicorn config.wsgi:application` |
 | [Vercel](https://vercel.com) | React frontend | Root: `frontend`, set `VITE_API_URL=https://<render-url>/api` |
 
-**Render env vars:** `DATABASE_URL`, `DATABASE_SSL=true`, `DEBUG=False`, `SECRET_KEY`, `ALLOWED_HOSTS=.onrender.com`, `CORS_ALLOWED_ORIGINS=https://<vercel-url>`
+**Render env vars:** `DATABASE_URL`, `DATABASE_SSL=true`, `DEBUG=False`, `SECRET_KEY`, `ALLOWED_HOSTS=.onrender.com`, `CORS_ALLOWED_ORIGINS=https://your-frontend.vercel.app` (or rely on default Vercel regex — see [DEPLOY.md](DEPLOY.md))
 
 **Notes:**
 - Render free tier sleeps after 15 min idle (~30s cold start on first request).
