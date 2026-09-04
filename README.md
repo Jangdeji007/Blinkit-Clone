@@ -23,18 +23,31 @@ python -m venv venv
 copy backend\.env.example backend\.env
 ```
 
-Create the database, run migrations, create an admin user, and seed demo data:
+Create the database, run migrations, and seed demo data (includes demo login accounts):
 
 ```powershell
 sqlcmd -S localhost -E -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'blinkit_db') CREATE DATABASE blinkit_db;"
 cd backend
 ..\venv\Scripts\python manage.py migrate
-..\venv\Scripts\python manage.py createsuperuser
 ..\venv\Scripts\python manage.py seed_demo
 ..\venv\Scripts\python manage.py runserver
 ```
 
 Backend runs at http://127.0.0.1:8000 — see [backend/README.md](backend/README.md) for detailed setup and environment variables.
+
+## Demo login credentials
+
+Use these accounts at http://localhost:5173/login after running `seed_demo`:
+
+| Role | Username | Password |
+|------|----------|----------|
+| **Admin** | `admin` | `Admin@123` |
+| **Customer** | `customer` | `Customer@123` |
+
+- **Admin** → redirected to `/admin/dashboard` (product management)
+- **Customer** → redirected to home (browse, cart, checkout, orders)
+
+To reset passwords to the values above, run `python manage.py seed_demo` again.
 
 ### 2. Frontend
 
@@ -57,14 +70,14 @@ Use this flow to verify the assignment end-to-end:
 
 ### Admin flow
 
-1. Open http://localhost:5173/login and sign in with the admin account from `createsuperuser`.
+1. Open http://localhost:5173/login and sign in with **admin** / **Admin@123**.
 2. You are redirected to `/admin/dashboard` with the seeded product table.
 3. Click **Add Product** — category dropdown is populated from seeded data.
 4. Create, edit, or delete a product and confirm changes appear on the customer home page.
 
 ### Customer flow
 
-1. Sign up at `/signup` (or log in as an existing customer).
+1. Log in at `/login` with **customer** / **Customer@123** (or sign up a new account).
 2. On the home page, search and filter products by category or price.
 3. Open a product, set quantity, and click **Add to Cart**.
 4. Go to **Cart** — adjust quantities or remove items.
@@ -95,7 +108,7 @@ blinkit-clone/
 | Location | Variable | Default |
 |----------|----------|---------|
 | `backend/.env` | SQL Server connection, `SECRET_KEY`, `CORS_ALLOWED_ORIGINS` | See [backend/.env.example](backend/.env.example) |
-| `frontend/.env` | `VITE_API_URL` | `http://127.0.0.1:8000/api` |
+| `frontend/.env` | `VITE_API_URL` | `/api` (proxied to Django in dev) |
 
 ## Requirements reference
 

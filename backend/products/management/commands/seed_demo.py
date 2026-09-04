@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 
 from products.models import Category, Product
+from users.models import User
 
 CATEGORIES = [
     'Dairy',
@@ -89,8 +90,54 @@ PRODUCTS = [
 ]
 
 
+DEMO_ADMIN = {
+    'username': 'admin',
+    'password': 'Admin@123',
+    'email': 'admin@demo.com',
+}
+
+DEMO_CUSTOMER = {
+    'username': 'Customer',
+    'password': 'Customer@123',
+    'email': 'customer@demo.com',
+}
+
+
 class Command(BaseCommand):
-    help = 'Seed demo categories and products for local development and demos.'
+    help = 'Seed demo categories, products, and login accounts for local development and demos.'
+
+    def _seed_demo_users(self):
+        admin, admin_created = User.objects.get_or_create(
+            username=DEMO_ADMIN['username'],
+            defaults={
+                'email': DEMO_ADMIN['email'],
+                'role': User.Role.ADMIN,
+                'is_staff': True,
+                'is_superuser': True,
+            },
+        )
+        if not admin_created:
+            admin.role = User.Role.ADMIN
+            admin.is_staff = True
+            admin.is_superuser = True
+            admin.email = DEMO_ADMIN['email']
+        admin.set_password(DEMO_ADMIN['password'])
+        admin.save()
+
+        customer, customer_created = User.objects.get_or_create(
+            username=DEMO_CUSTOMER['username'],
+            defaults={
+                'email': DEMO_CUSTOMER['email'],
+                'role': User.Role.CUSTOMER,
+            },
+        )
+        if not customer_created:
+            customer.role = User.Role.CUSTOMER
+            customer.email = DEMO_CUSTOMER['email']
+        customer.set_password(DEMO_CUSTOMER['password'])
+        customer.save()
+
+        return admin_created, customer_created
 
     def handle(self, *args, **options):
         categories_created = 0
@@ -117,11 +164,24 @@ class Command(BaseCommand):
             if created:
                 products_created += 1
 
-        if categories_created == 0 and products_created == 0:
+        admin_created, customer_created = self._seed_demo_users()
+
+        if (
+            categories_created == 0
+            and products_created == 0
+            and not admin_created
+            and not customer_created
+        ):
             self.stdout.write(self.style.WARNING('Demo data already exists, skipped.'))
         else:
             self.stdout.write(
                 self.style.SUCCESS(
-                    f'Created {categories_created} categories, {products_created} products.',
+                    f'Created {categories_created} categories, {products_created} products, '
+                    f'{int(admin_created)} admin, {int(customer_created)} customer.',
+                ),
+            )
+            self.stdout.write(
+                self.style.SUCCESS(
+                    'Demo login — admin / Admin@123  |  Customer / Customer@123',
                 ),
             )

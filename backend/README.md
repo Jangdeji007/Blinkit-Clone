@@ -43,25 +43,24 @@ cd backend
 ..\venv\Scripts\python manage.py migrate
 ```
 
-### 5. Create admin user
+### 5. Seed demo data
 
-```powershell
-..\venv\Scripts\python manage.py createsuperuser
-```
-
-This automatically sets `role=admin` and `is_staff=True`.
-
-### 6. Seed demo data (optional)
-
-Load sample categories and products for local demos:
+Creates sample categories, products, and demo login accounts:
 
 ```powershell
 ..\venv\Scripts\python manage.py seed_demo
 ```
 
-Safe to run multiple times — existing records are skipped.
+Safe to run multiple times — existing records are updated/skipped.
 
-### 7. Run the server
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `Admin@123` |
+| Customer | `customer` | `Customer@123` |
+
+Alternatively, create a custom admin with `createsuperuser` (sets `role=admin` automatically).
+
+### 6. Run the server
 
 ```powershell
 ..\venv\Scripts\python manage.py runserver
