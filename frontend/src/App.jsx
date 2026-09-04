@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
@@ -8,6 +8,7 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import NotFoundPage from './pages/NotFoundPage'
 import OrdersPage from './pages/OrdersPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import SignupPage from './pages/SignupPage'
@@ -90,6 +91,7 @@ export default function App() {
             </ProtectedRoute>
           )}
         />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route
           path="/admin/products/add"
           element={(
@@ -118,6 +120,14 @@ export default function App() {
                 <AdminDashboardPage />
               </Layout>
             </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="*"
+          element={(
+            <Layout>
+              <NotFoundPage />
+            </Layout>
           )}
         />
       </Routes>
