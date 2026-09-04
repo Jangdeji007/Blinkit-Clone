@@ -11,6 +11,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        allow_null=True,
+        required=False,
+    )
 
     class Meta:
         model = Product
@@ -37,3 +42,15 @@ class ProductSerializer(serializers.ModelSerializer):
         if value < 0:
             raise serializers.ValidationError('Stock cannot be negative.')
         return value
+
+    def validate_category(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        if isinstance(data, dict):
+            mutable = data.copy()
+            category = mutable.get('category')
+            if category in ('', None):
+                mutable['category'] = None
+            data = mutable
+        return super().to_internal_value(data)

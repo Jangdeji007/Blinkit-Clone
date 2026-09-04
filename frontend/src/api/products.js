@@ -24,15 +24,11 @@ export function getProduct(id) {
 }
 
 export function createProduct(formData) {
-  return api.post('/products/', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  return api.post('/products/', formData)
 }
 
 export function updateProduct(id, formData) {
-  return api.patch(`/products/${id}/`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  return api.patch(`/products/${id}/`, formData)
 }
 
 export function deleteProduct(id) {

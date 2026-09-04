@@ -51,7 +51,17 @@ cd backend
 
 This automatically sets `role=admin` and `is_staff=True`.
 
-### 6. Run the server
+### 6. Seed demo data (optional)
+
+Load sample categories and products for local demos:
+
+```powershell
+..\venv\Scripts\python manage.py seed_demo
+```
+
+Safe to run multiple times — existing records are skipped.
+
+### 7. Run the server
 
 ```powershell
 ..\venv\Scripts\python manage.py runserver

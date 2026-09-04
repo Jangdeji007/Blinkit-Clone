@@ -14,7 +14,7 @@ const EMPTY_FORM = {
   category: '',
 }
 
-function buildFormData(form, imageFile) {
+function buildFormData(form, imageFile, isEdit = false) {
   const formData = new FormData()
   formData.append('name', form.name.trim())
   formData.append('description', form.description.trim())
@@ -22,6 +22,8 @@ function buildFormData(form, imageFile) {
   formData.append('stock', form.stock)
   if (form.category) {
     formData.append('category', form.category)
+  } else if (isEdit) {
+    formData.append('category', '')
   }
   if (imageFile) {
     formData.append('image', imageFile)
@@ -114,7 +116,7 @@ export default function AdminProductFormPage() {
     setError('')
     setSubmitting(true)
     try {
-      const formData = buildFormData(form, imageFile)
+      const formData = buildFormData(form, imageFile, isEdit)
       if (isEdit) {
         await updateProduct(id, formData)
       } else {
