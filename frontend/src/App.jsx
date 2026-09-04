@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
+import Footer from './components/Footer'
 import Navbar from './components/Navbar'
 import AdminDashboardPage from './pages/AdminDashboardPage'
 import AdminProductFormPage from './pages/AdminProductFormPage'
@@ -15,10 +16,11 @@ import ProtectedRoute from './routes/ProtectedRoute'
 
 function Layout({ children }) {
   return (
-    <>
+    <div className="app-shell">
       <Navbar />
-      {children}
-    </>
+      <div className="app-main">{children}</div>
+      <Footer />
+    </div>
   )
 }
 

@@ -99,15 +99,52 @@ export default function HomePage() {
   return (
     <main className="page-content home-catalog">
       <section className="home-hero">
-        <div>
+        <div className="home-hero-content">
+          <span className="hero-badge">⚡ Delivery in 10 minutes</span>
           <h1>Grocery &amp; Kitchen</h1>
           <p>
             {isAuthenticated
-              ? `Welcome back, ${user.username}! Delivered in minutes.`
-              : 'Fresh groceries delivered to your doorstep in minutes.'}
+              ? `Welcome back, ${user.username}! Order fresh groceries now.`
+              : 'Paan corner, dairy, snacks & more — delivered instantly.'}
           </p>
         </div>
+        <div className="home-hero-stats">
+          <div className="hero-stat">
+            <strong>10 min</strong>
+            <span>Delivery</span>
+          </div>
+          <div className="hero-stat">
+            <strong>{categories.length || '8+'}</strong>
+            <span>Categories</span>
+          </div>
+          <div className="hero-stat">
+            <strong>100%</strong>
+            <span>Fresh</span>
+          </div>
+        </div>
       </section>
+
+      {categories.length > 0 && (
+        <section className="category-chips" aria-label="Browse categories">
+          <button
+            type="button"
+            className={`category-chip ${!filters.category ? 'active' : ''}`}
+            onClick={() => updateFilters({ category: '' })}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              className={`category-chip ${filters.category === String(cat.id) ? 'active' : ''}`}
+              onClick={() => updateFilters({ category: String(cat.id) })}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </section>
+      )}
 
       <ProductFilters
         filters={filters}

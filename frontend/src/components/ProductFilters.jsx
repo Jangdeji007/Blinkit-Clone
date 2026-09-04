@@ -41,7 +41,7 @@ export default function ProductFilters({
         <input
           id="search"
           type="search"
-          placeholder="Search products..."
+          placeholder="Search 'milk', 'bread', 'snacks'..."
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
         />
