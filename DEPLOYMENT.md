@@ -328,9 +328,34 @@ Use this checklist after both services are live:
 
 ### Product images on production
 
-- Uploaded images are stored on Render's **temporary disk** and are **not served** when `DEBUG=False`.
-- Seeded demo products work **without images** — login, cart, checkout, and orders all function normally.
-- For persistent images in production, integrate cloud storage (e.g. Cloudinary) — not included in this guide.
+Render's disk is **temporary** and Django does **not** serve `/media/` when `DEBUG=False`. This project uses **Cloudinary** for persistent product images when `CLOUDINARY_URL` is set on Render.
+
+#### Setup Cloudinary
+
+1. Create a free account at [cloudinary.com](https://cloudinary.com).
+2. Open the **Dashboard** → **Product environment credentials**.
+3. Copy the full **CLOUDINARY_URL** (format: `cloudinary://API_KEY:API_SECRET@CLOUD_NAME`).
+4. On Render → your backend service → **Environment** → add:
+
+   | Key | Value |
+   |-----|-------|
+   | `CLOUDINARY_URL` | `cloudinary://...` (paste from dashboard) |
+
+5. Push the latest code (includes `django-cloudinary-storage`) and wait for Render to redeploy.
+
+#### Re-upload product images
+
+Existing products may still have broken `/media/...` URLs in the database. After Cloudinary is configured:
+
+1. Log in as **admin** / **Admin@123** on your live frontend.
+2. Open **Admin Dashboard** → **Edit** each product that should show an image.
+3. Choose an image file and **Save**.
+
+New uploads are stored on Cloudinary. The API returns URLs like `https://res.cloudinary.com/...` which load directly in the browser.
+
+#### Local development
+
+Without `CLOUDINARY_URL`, images use local `backend/media/` (served via Vite proxy). Set `CLOUDINARY_URL` in `backend/.env` only if you want to test Cloudinary locally.
 
 ---
 
@@ -378,6 +403,7 @@ Safe to run multiple times — existing records are updated or skipped.
 | `PYTHON_VERSION` | Recommended | `3.12.0` |
 | `CORS_ALLOWED_ORIGINS` | Optional | `https://your-project.vercel.app` |
 | `CORS_ALLOWED_ORIGIN_REGEXES` | Optional | `^https://[\w.-]+\.vercel\.app$` |
+| `CLOUDINARY_URL` | Recommended | `cloudinary://API_KEY:API_SECRET@CLOUD_NAME` |
 
 ### Vercel (production frontend)
 
